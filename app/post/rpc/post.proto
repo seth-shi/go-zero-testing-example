@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package post;
+option go_package="./post";
+
+message PostRequest {
+  uint64  id = 1;
+}
+
+message PostResponse {
+  uint64 id = 1;
+  string title = 2;
+  string content = 3;
+  uint64 createdAt = 4;
+  uint64 viewCount = 5;
+}
+
+service Post {
+  rpc Get(PostRequest) returns(PostResponse);
+}

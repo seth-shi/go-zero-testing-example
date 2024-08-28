@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package id;
+option go_package="./id";
+
+message IdRequest {
+}
+
+message IdResponse {
+  uint64 id = 1;
+  uint64 node = 2;
+}
+
+service Id {
+  rpc Get(IdRequest) returns(IdResponse);
+}
