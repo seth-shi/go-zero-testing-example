@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/alicebob/miniredis/v2"
 	sqle "github.com/dolthub/go-mysql-server"
@@ -31,7 +30,7 @@ func FakerDatabaseServer() string {
 	mysqlDb.SetEnabled(true)
 	mysqlDb.AddRootAccount()
 
-	port, err = GetAvailablePort()
+	port = GetAvailablePort()
 	logx.Must(err)
 
 	config := server.Config{
@@ -63,9 +62,7 @@ func FakerDatabaseServer() string {
 
 func FakerRedisServer() (*miniredis.Miniredis, string) {
 	m := miniredis.NewMiniRedis()
-	if err := m.Start(); err != nil {
-		log.Fatalf("could not start miniredis: %s", err)
-	}
+	logx.Must(m.Start())
 
 	return m, m.Addr()
 }

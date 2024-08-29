@@ -28,8 +28,7 @@ var GetValue = sync.OnceValue(
 		redis, redisAddr := pkg.FakerRedisServer()
 		dsn := pkg.FakerDatabaseServer()
 
-		rpcPort, err := pkg.GetAvailablePort()
-		logx.Must(err)
+		rpcPort := pkg.GetAvailablePort()
 
 		conn, err := gorm.Open(mysql.Open(dsn))
 		logx.Must(err)

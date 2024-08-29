@@ -8,8 +8,8 @@ import (
 
 	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/id"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/mock"
-	"github.com/stretchr/testify/assert"
 	mock2 "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 
@@ -26,9 +26,9 @@ func TestPost_BeforeCreate(t *testing.T) {
 	)
 
 	data.ID = 1
-	assert.NoError(t, data.BeforeCreate(&tx))
+	require.NoError(t, data.BeforeCreate(&tx))
 	data.ID = 0
-	assert.ErrorIs(t, data.BeforeCreate(&tx), errNotInitIdGenerator)
+	require.ErrorIs(t, data.BeforeCreate(&tx), errNotInitIdGenerator)
 
 	mockCall := mockVal.
 		IdServer.
@@ -37,7 +37,7 @@ func TestPost_BeforeCreate(t *testing.T) {
 	defer mockCall.Unset()
 
 	idClient = mockVal.IdServer
-	assert.NoError(t, data.BeforeCreate(&tx))
+	require.NoError(t, data.BeforeCreate(&tx))
 }
 
 func TestSetIdGeneratorSuccess(t *testing.T) {
@@ -59,8 +59,8 @@ func TestSetIdGeneratorSuccess(t *testing.T) {
 
 	SetIdGenerator(mockVal.IdServer)
 	res, err := idGenerator(&tx)
-	assert.NoError(t, err)
-	assert.Equal(t, uint64(createId), res)
+	require.NoError(t, err)
+	require.Equal(t, uint64(createId), res)
 }
 
 func TestSetIdGenerator(t *testing.T) {
@@ -102,7 +102,7 @@ func TestSetIdGenerator(t *testing.T) {
 			tt.name, func(t *testing.T) {
 				SetIdGenerator(tt.args)
 				_, err := idGenerator(&tx)
-				assert.Equal(t, err, tt.want)
+				require.Equal(t, err, tt.want)
 			},
 		)
 	}

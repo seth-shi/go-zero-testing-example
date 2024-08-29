@@ -320,19 +320,19 @@ func TestGetLogic_Get(t *testing.T) {
 
 	// 正常的情况
 	resp, err := logic.Get(&post.PostRequest{})
-	assert.NoError(t, err)
-	assert.Equal(t, uint64(1), resp.GetId())
+	require.NoError(t, err)
+	require.Equal(t, uint64(1), resp.GetId())
 
 	// redis 错误的情况
 	redisMock.ExpectIncr("post:1").SetErr(errRedisNotFound)
 	_, err3 := logic.Get(&post.PostRequest{})
-	assert.ErrorIs(t, err3, errRedisNotFound)
+	require.ErrorIs(t, err3, errRedisNotFound)
 
 	// 数据库测试的情况
 	mockCall.Unset()
 	mockDao.On("First", mock2.Anything).Return(0, errNotFound)
 	_, err2 := logic.Get(&post.PostRequest{})
-	assert.ErrorIs(t, err2, errNotFound)
+	require.ErrorIs(t, err2, errNotFound)
 }
 
 type IdServer struct {
@@ -532,13 +532,13 @@ func TestGet(t *testing.T) {
 		},
 	)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	client := post.NewPostClient(conn.Conn())
 	resp, err := client.Get(context.Background(), &post.PostRequest{Id: mockModel.PostModel.ID})
-	assert.NoError(t, err)
-	assert.NotZero(t, resp.GetId())
-	assert.Equal(t, resp.GetId(), mockModel.PostModel.ID)
-	assert.Equal(t, resp.Title, lo.FromPtr(mockModel.PostModel.Title))
+	require.NoError(t, err)
+	require.NotZero(t, resp.GetId())
+	require.Equal(t, resp.GetId(), mockModel.PostModel.ID)
+	require.Equal(t, resp.Title, lo.FromPtr(mockModel.PostModel.Title))
 }
 
 ////////////////////////////////////////

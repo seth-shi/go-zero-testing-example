@@ -3,11 +3,10 @@ package pkg
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetAvailablePort(t *testing.T) {
-	port, err := GetAvailablePort()
-	assert.NoError(t, err)
-	assert.Greater(t, port, 1024)
+	port := GetAvailablePort()
+	require.Greater(t, port, 1024)
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/model/do"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/svc"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/post"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // 注意, 此部分是单元测试, 不依赖任何外部依赖
@@ -46,9 +46,9 @@ func TestGetLogic_Get(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows(columns).AddRow(row...))
 	mockVal.RedisMock.ExpectIncr("post:1").SetVal(1)
 	resp, err := logic.Get(&post.PostRequest{Id: 1})
-	assert.NoError(t, err)
-	assert.Equal(t, uint64(1), resp.GetId())
-	assert.Equal(t, "title", resp.GetTitle())
+	require.NoError(t, err)
+	require.Equal(t, uint64(1), resp.GetId())
+	require.Equal(t, "title", resp.GetTitle())
 
 	// redis 返回错误的场景
 	mockVal.
@@ -58,7 +58,7 @@ func TestGetLogic_Get(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows(columns).AddRow(row...))
 	mockVal.RedisMock.ExpectIncr("post:1").SetErr(errRedisNotFound)
 	_, err3 := logic.Get(&post.PostRequest{Id: 1})
-	assert.ErrorIs(t, err3, errRedisNotFound)
+	require.ErrorIs(t, err3, errRedisNotFound)
 
 	// 数据库返回错误的场景
 	mockVal.
@@ -67,5 +67,5 @@ func TestGetLogic_Get(t *testing.T) {
 		WithArgs(1, 1).
 		WillReturnError(errNotFound)
 	_, err2 := logic.Get(&post.PostRequest{Id: 1})
-	assert.ErrorIs(t, err2, errNotFound)
+	require.ErrorIs(t, err2, errNotFound)
 }

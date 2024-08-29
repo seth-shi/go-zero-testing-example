@@ -3,29 +3,28 @@ package pkg
 import (
 	"errors"
 	"net"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 var (
 	errNotAddress = errors.New("listener address is not tcp address")
 )
 
-func GetAvailablePort() (int, error) {
+func GetAvailablePort() int {
 	address, err := net.ResolveTCPAddr("tcp", "0.0.0.0:0")
-	if err != nil {
-		return 0, err
-	}
+	logx.Must(err)
 
 	listener, err := net.ListenTCP("tcp", address)
-	if err != nil {
-		return 0, err
-	}
+	logx.Must(err)
+
 	//nolint:errcheck
 	defer listener.Close()
 
 	addr, ok := listener.Addr().(*net.TCPAddr)
 	if !ok {
-		return 0, errNotAddress
+		logx.Must(errNotAddress)
 	}
 
-	return addr.Port, nil
+	return addr.Port
 }

@@ -1,17 +1,12 @@
 package pkg
 
 import (
-	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/zeromicro/go-zero/core/logx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-)
-
-var (
-	errTransactionInsert = errors.New("insert error")
 )
 
 func TestFakerRedisServer(t *testing.T) {
@@ -24,10 +19,10 @@ func TestFakerRedisServer(t *testing.T) {
 	m, _ := FakerRedisServer()
 	t.Cleanup(m.Close)
 
-	assert.Nil(t, m.Set(key, val))
+	require.Nil(t, m.Set(key, val))
 	savedVal, err := m.Get(key)
-	assert.NoError(t, err)
-	assert.Equal(t, val, savedVal)
+	require.NoError(t, err)
+	require.Equal(t, val, savedVal)
 }
 
 func TestFakerDatabaseServer(t *testing.T) {
@@ -37,24 +32,24 @@ func TestFakerDatabaseServer(t *testing.T) {
 		mysql.Open(dsn),
 	)
 	logx.Must(err)
-	assert.NotNil(t, db)
+	require.NotNil(t, db)
 
 	type user struct {
 		gorm.Model
 		Name string `gorm:"size:255;index:idx_name,unique"`
 	}
-	assert.False(t, db.Migrator().HasTable(&user{}))
+	require.False(t, db.Migrator().HasTable(&user{}))
 
 	err = db.Migrator().CreateTable(&user{})
-	assert.NoError(t, err)
-	assert.True(t, db.Migrator().HasTable(&user{}))
+	require.NoError(t, err)
+	require.True(t, db.Migrator().HasTable(&user{}))
 
 	var (
 		count     int64
 		wantCount int64 = 1
 		model           = &user{}
 	)
-	assert.NoError(t, db.Model(model).Create(&user{Name: "test"}).Error)
-	assert.NoError(t, db.Model(model).Count(&count).Error)
-	assert.Equal(t, count, wantCount)
+	require.NoError(t, db.Model(model).Create(&user{Name: "test"}).Error)
+	require.NoError(t, db.Model(model).Count(&count).Error)
+	require.Equal(t, count, wantCount)
 }

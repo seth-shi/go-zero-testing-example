@@ -12,7 +12,7 @@ import (
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/model/do"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/svc"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/post"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -59,11 +59,11 @@ func TestGet(t *testing.T) {
 			NonBlock: false,
 		},
 	)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	client := post.NewPostClient(conn.Conn())
 	resp, err := client.Get(context.Background(), &post.PostRequest{Id: postModel.ID})
-	assert.NoError(t, err)
-	assert.NotZero(t, resp.GetId())
-	assert.Equal(t, resp.GetId(), postModel.ID)
-	assert.Equal(t, resp.Title, lo.FromPtr(postModel.Title))
+	require.NoError(t, err)
+	require.NotZero(t, resp.GetId())
+	require.Equal(t, resp.GetId(), postModel.ID)
+	require.Equal(t, resp.Title, lo.FromPtr(postModel.Title))
 }
