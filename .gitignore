@@ -17,5 +17,4 @@ app/**/etc/*.yaml
 **/.air.toml
 report.xml
 report.json
-gen.go
 coverage.out
