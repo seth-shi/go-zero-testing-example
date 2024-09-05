@@ -8,27 +8,21 @@ import (
 	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/internal/server"
 	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/internal/svc"
 	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/core/logx"
-
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 
 var getConfig = loadConfigByFile
 
-func loadConfigByFile() (config.Config, error) {
+func loadConfigByFile(filename string) config.Config {
 	var c config.Config
-	if err := conf.Load("etc/id.yaml", &c); err != nil {
-		return c, err
-	}
-
-	return c, nil
+	conf.MustLoad(filename, &c)
+	return c
 }
 
 func main() {
 
-	cfg, err := getConfig()
-	logx.Must(err)
+	cfg := getConfig("etc/id.yaml")
 	ctx := svc.NewServiceContext(cfg)
 
 	s := zrpc.MustNewServer(

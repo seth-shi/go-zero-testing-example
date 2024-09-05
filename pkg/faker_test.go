@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -52,4 +53,36 @@ func TestFakerDatabaseServer(t *testing.T) {
 	require.NoError(t, db.Model(model).Create(&user{Name: "test"}).Error)
 	require.NoError(t, db.Model(model).Count(&count).Error)
 	require.Equal(t, count, wantCount)
+}
+
+func TestCreateTempFile(t *testing.T) {
+	tests := []string{
+		".json",
+		".yaml",
+		".yml",
+	}
+	text := `{
+	"a": "foo",
+	"b": 1,
+	"c": "${FOO}",
+	"d": "abcd!@#$112"
+}`
+	t.Setenv("FOO", "2")
+
+	for _, test := range tests {
+		test := test
+		t.Run(
+			test, func(t *testing.T) {
+				removeFile, tmpFile, err := CreateTempFile(test, text)
+				require.NoError(t, err)
+				defer removeFile()
+
+				require.FileExists(t, tmpFile)
+				content, err := os.ReadFile(tmpFile)
+				require.NoError(t, err)
+				require.Equal(t, text, string(content))
+			},
+		)
+	}
+
 }

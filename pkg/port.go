@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net"
 
-	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/samber/lo"
 )
 
 var (
@@ -13,18 +13,16 @@ var (
 
 func GetAvailablePort() int {
 	address, err := net.ResolveTCPAddr("tcp", "0.0.0.0:0")
-	logx.Must(err)
+	lo.Must0(err)
 
 	listener, err := net.ListenTCP("tcp", address)
-	logx.Must(err)
+	lo.Must0(err)
 
 	//nolint:errcheck
 	defer listener.Close()
 
 	addr, ok := listener.Addr().(*net.TCPAddr)
-	if !ok {
-		logx.Must(errNotAddress)
-	}
+	lo.Must0(lo.Validate(ok, errNotAddress.Error()))
 
 	return addr.Port
 }

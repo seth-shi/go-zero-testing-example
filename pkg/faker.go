@@ -2,11 +2,14 @@ package pkg
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/alicebob/miniredis/v2"
 	sqle "github.com/dolthub/go-mysql-server"
 	"github.com/dolthub/go-mysql-server/memory"
 	"github.com/dolthub/go-mysql-server/server"
+	"github.com/samber/lo"
+	"github.com/zeromicro/go-zero/core/hash"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -31,7 +34,7 @@ func FakerDatabaseServer() string {
 	mysqlDb.AddRootAccount()
 
 	port = GetAvailablePort()
-	logx.Must(err)
+	lo.Must0(err)
 
 	config := server.Config{
 		Protocol: "tcp",
@@ -43,7 +46,7 @@ func FakerDatabaseServer() string {
 		memory.NewSessionBuilder(provider),
 		nil,
 	)
-	logx.Must(err)
+	lo.Must0(err)
 	go func() {
 		logx.Must(s.Start())
 	}()
@@ -62,7 +65,19 @@ func FakerDatabaseServer() string {
 
 func FakerRedisServer() (*miniredis.Miniredis, string) {
 	m := miniredis.NewMiniRedis()
-	logx.Must(m.Start())
+	lo.Must0(m.Start())
 
 	return m, m.Addr()
+}
+
+func CreateTempFile(ext, text string) (func(), string, error) {
+	tmpFile := lo.Must(os.CreateTemp(os.TempDir(), hash.Md5Hex([]byte(text))+"*"+ext))
+
+	lo.Must(tmpFile.WriteString(text))
+	filename := tmpFile.Name()
+	lo.Must0(tmpFile.Close())
+	releaseFile := func() {
+		logx.Debugf("delete_tmp_file:%+v", os.Remove(filename))
+	}
+	return releaseFile, filename, nil
 }
