@@ -1,4 +1,5 @@
 ## 开始
+![Coverage](https://img.shields.io/badge/Coverage-41.8%25-yellow)
 
 #### 涉及测试的类型
 * 单元测试
