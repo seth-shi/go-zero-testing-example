@@ -1,7 +1,6 @@
 ## 开始
 
 #### 涉及测试的类型
-
 * 单元测试
     * 业务的实现代码基本都是写单元测试, 比如在`go-zero`内部的`logic`
     * 所有的依赖都使用`mock`, 比如数据库就使用[sql-mock](https://github.com/DATA-DOG/go-sqlmock), [redis-mock](https://github.com/go-redis/redismock), 其它依赖使用接口[testify-mock](https://github.com/stretchr/testify?tab=readme-ov-file#mock-package)
