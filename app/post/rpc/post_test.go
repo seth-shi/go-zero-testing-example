@@ -5,11 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/redis/go-redis/v9"
 	"github.com/samber/lo"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/config"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/faker"
-	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/model/do"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/svc"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/post"
 	"github.com/stretchr/testify/require"
@@ -19,24 +17,8 @@ import (
 func TestMain(m *testing.M) {
 
 	// 使用默认配置
-	svcCtxGet = func() (*svc.ServiceContext, error) {
-
-		fakerVal := faker.GetValue()
-		return &svc.ServiceContext{
-			Config: config.Config{
-				RpcServerConf: zrpc.RpcServerConf{
-					ListenOn: fakerVal.RpcListen,
-				},
-			},
-			Redis: redis.NewClient(
-				&redis.Options{
-					Addr: fakerVal.RedisAddr,
-					DB:   0,
-				},
-			),
-			IdRpc: fakerVal.IdServer,
-			Query: do.Use(fakerVal.Gorm),
-		}, nil
+	svcCtxGet = func(c config.Config) *svc.ServiceContext {
+		return faker.GetValue().SvcCtx
 	}
 
 	go main()

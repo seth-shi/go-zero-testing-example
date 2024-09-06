@@ -2,49 +2,69 @@ package faker
 
 import (
 	"fmt"
-	"math/rand"
 	"sync"
 
 	"github.com/alicebob/miniredis/v2"
+	"github.com/redis/go-redis/v9"
+	"github.com/samber/lo"
+	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/id"
+	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/config"
+	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/model/do"
+	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/svc"
 	"github.com/seth-shi/go-zero-testing-example/pkg"
-	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/service"
+	"github.com/zeromicro/go-zero/zrpc"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
+const (
+	startId = 100000
+)
+
 type value struct {
-	IdServer    *idGenerator
+	IdServer    *idServer
 	Redis       *miniredis.Miniredis
 	Models      *fakerModels
 	Gorm        *gorm.DB
+	DatabaseDsn string
 	RedisAddr   string
 	RpcListen   string
-	DatabaseDsn string
+	SvcCtx      *svc.ServiceContext
 }
 
 var GetValue = sync.OnceValue(
 	func() value {
 
-		redis, redisAddr := pkg.FakerRedisServer()
-		dsn := pkg.FakerDatabaseServer()
-
 		rpcPort := pkg.GetAvailablePort()
+		redisMock, redisAddr := pkg.FakerRedisServer()
+		mysqlDsn := pkg.FakerDatabaseServer()
+		dbConn := lo.Must(gorm.Open(mysql.Open(mysqlDsn)))
 
-		conn, err := gorm.Open(mysql.Open(dsn))
-		logx.Must(err)
+		testIdServer := newIdServer()
+		listenOn := fmt.Sprintf(":%d", rpcPort)
 
-		idGen := &idGenerator{
-			startId: uint64(rand.Int() + 1),
-			locker:  &sync.RWMutex{},
-		}
 		return value{
-			IdServer:    idGen,
-			Redis:       redis,
+			IdServer:    testIdServer,
+			Redis:       redisMock,
 			RedisAddr:   redisAddr,
-			DatabaseDsn: dsn,
-			Models:      makeDatabase(dsn, idGen),
-			RpcListen:   fmt.Sprintf(":%d", rpcPort),
-			Gorm:        conn,
+			Models:      makeDatabase(dbConn),
+			RpcListen:   listenOn,
+			DatabaseDsn: mysqlDsn,
+			Gorm:        dbConn,
+			SvcCtx: &svc.ServiceContext{
+				Config: config.Config{
+					RpcServerConf: zrpc.RpcServerConf{
+						ListenOn: listenOn,
+						ServiceConf: service.ServiceConf{
+							Mode: service.TestMode,
+						},
+					},
+				},
+				Redis: redis.NewClient(&redis.Options{Addr: redisAddr}),
+				IdRpc: id.NewIdClient(testIdServer.Connect()),
+				Query: do.Use(dbConn),
+			},
 		}
 	},
 )

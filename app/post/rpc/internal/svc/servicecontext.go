@@ -25,9 +25,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	conn, err := gorm.Open(mysql.Open(c.DataSource))
 	logx.Must(err)
 
-	idClient := id.NewIdClient(zrpc.MustNewClient(c.IdRpc).Conn())
-	entity.SetIdGenerator(idClient)
-
 	rdb := redis.NewClient(
 		&redis.Options{
 			Addr:     c.RedisConf.Host,
@@ -35,6 +32,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			DB:       0,
 		},
 	)
+
+	idClient := id.NewIdClient(zrpc.MustNewClient(c.IdRpc).Conn())
+	entity.SetIdGenerator(idClient)
 
 	return &ServiceContext{
 		Config: c,

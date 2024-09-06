@@ -6,27 +6,12 @@ import (
 	"os"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/id"
-	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/internal/config"
 	"github.com/seth-shi/go-zero-testing-example/pkg"
 	"github.com/stretchr/testify/require"
 	"github.com/zeromicro/go-zero/zrpc"
 )
-
-func Test_loadConfigByFile(t *testing.T) {
-	remove, tmp, err := pkg.CreateTempFile(
-		".yaml", `
-Name: id.rpc
-ListenOn: 0.0.0.0:9502
-`,
-	)
-	require.NoError(t, err)
-	defer remove()
-
-	svcCtx := loadConfigByFile(tmp)
-	require.NoError(t, err)
-	require.Equal(t, "id.rpc", svcCtx.Name)
-}
 
 func Test_get(t *testing.T) {
 	var (
@@ -47,14 +32,15 @@ var (
 func TestMain(m *testing.M) {
 
 	testListenOn = fmt.Sprintf(":%d", pkg.GetAvailablePort())
-
-	getConfig = func(filename string) config.Config {
-		return config.Config{
-			RpcServerConf: zrpc.RpcServerConf{
-				ListenOn: testListenOn,
-			},
-		}
-	}
+	data := fmt.Sprintf(
+		`
+Name: id.rpc
+ListenOn: %s
+`, testListenOn,
+	)
+	remove, tmp := lo.Must2(pkg.CreateTempFile(".yaml", data))
+	defer remove()
+	configFile = tmp
 
 	go main()
 

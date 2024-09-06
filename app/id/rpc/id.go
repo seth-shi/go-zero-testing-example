@@ -12,18 +12,15 @@ import (
 	"google.golang.org/grpc"
 )
 
-var getConfig = loadConfigByFile
-
-func loadConfigByFile(filename string) config.Config {
-	var c config.Config
-	conf.MustLoad(filename, &c)
-	return c
-}
+var (
+	configFile = "etc/id.yaml"
+)
 
 func main() {
 
-	cfg := getConfig("etc/id.yaml")
-	ctx := svc.NewServiceContext(cfg)
+	var c config.Config
+	conf.MustLoad(configFile, &c)
+	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(
 		ctx.Config.RpcServerConf, func(grpcServer *grpc.Server) {
