@@ -23,7 +23,8 @@ jobs:
 
       - name: Run Test
         run: |
-          go test -v ./... -covermode=count -coverprofile=coverage.out
+          go test -v ./... -covermode=count -coverprofile=coverage.cov.tmp
+          cat coverage.cov.tmp | grep -wv -e gen.go -e pb.go -e internal/server -e internal/faker -e internal/mock > coverage.out
           go tool cover -func=coverage.out -o=coverage.out
 
       - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
