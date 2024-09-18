@@ -1,7 +1,30 @@
 ## 开始
 ![Coverage](https://img.shields.io/badge/Coverage-100.0%25-brightgreen)
 
-#### 涉及测试的类型
+#### 涉及测试 && 方法
+
+* `export_test.go`使用此文件不用写测试, 正式代码不会包含, 可以定义数据
+* 销毁创建方法
+
+```go
+func setUp(testName string) func() {
+    fmt.Printf("\tsetUp fixture for %s\n", testName)
+    return func() {
+        fmt.Printf("\ttearDown fixture for %s\n", testName)
+    }
+}
+
+func TestFunc1(t *testing.T) {
+  defer setUp(t.Name())()
+  fmt.Printf("\tExecute test: %s\n", t.Name())
+}
+
+func TestMain(m *testing.M) {
+  defer pkgSetUp("package demo_test")()
+  m.Run()
+}
+```
+
 * 单元测试
     * 业务的实现代码基本都是写单元测试, 比如在`go-zero`内部的`logic`
     * 所有的依赖都使用`mock`, 比如数据库就使用[sql-mock](https://github.com/DATA-DOG/go-sqlmock), [redis-mock](https://github.com/go-redis/redismock), 其它依赖使用接口[testify-mock](https://github.com/stretchr/testify?tab=readme-ov-file#mock-package)
