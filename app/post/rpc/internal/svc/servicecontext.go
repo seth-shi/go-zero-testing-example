@@ -36,6 +36,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	)
 
 	// 增加 链路追踪
+	// 可以在 go-zero trace.StartAgent(sc.Telemetry) 之前调用
+	// global.SetTracerProvider 会修改委托
 	logx.Must(conn.Use(tracing.NewPlugin(tracing.WithoutMetrics())))
 	logx.Must(redisotel.InstrumentTracing(rdb))
 
