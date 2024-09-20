@@ -3,9 +3,11 @@ module github.com/seth-shi/go-zero-testing-example
 go 1.22.6
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.33.0
 	github.com/dolthub/go-mysql-server v0.18.1
 	github.com/go-redis/redismock/v9 v9.2.0
+	github.com/redis/go-redis/extra/redisotel/v9 v9.5.3
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/samber/lo v1.47.0
 	github.com/sony/sonyflake v1.2.0
@@ -17,11 +19,11 @@ require (
 	gorm.io/gen v0.3.26
 	gorm.io/gorm v1.25.11
 	gorm.io/plugin/dbresolver v1.5.0
+	gorm.io/plugin/opentelemetry v0.1.6
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20230218143504-906a9b012302 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
@@ -73,7 +75,6 @@ require (
 	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.5.3 // indirect
-	github.com/redis/go-redis/extra/redisotel/v9 v9.5.3 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.2 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
@@ -116,7 +117,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/datatypes v1.1.1-0.20230130040222-c43177d3cf8c // indirect
 	gorm.io/hints v1.1.0 // indirect
-	gorm.io/plugin/opentelemetry v0.1.6 // indirect
 	k8s.io/api v0.29.3 // indirect
 	k8s.io/apimachinery v0.29.4 // indirect
 	k8s.io/client-go v0.29.3 // indirect
