@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 	"github.com/seth-shi/go-zero-testing-example/app/id/rpc/id"
 	"github.com/seth-shi/go-zero-testing-example/app/post/rpc/internal/config"
@@ -10,6 +11,7 @@ import (
 	"github.com/zeromicro/go-zero/zrpc"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 type ServiceContext struct {
@@ -32,6 +34,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			DB:       0,
 		},
 	)
+
+	// 增加 链路追踪
+	logx.Must(conn.Use(tracing.NewPlugin(tracing.WithoutMetrics())))
+	logx.Must(redisotel.InstrumentTracing(rdb))
 
 	idClient := id.NewIdClient(zrpc.MustNewClient(c.IdRpc).Conn())
 	entity.SetIdGenerator(idClient)
